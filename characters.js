@@ -603,4 +603,12 @@ const characters = [
         realImage:"img/yugi.webp",
         clue:"sente o coração das cartas"
     },
+    {
+        name:"Rengoku",
+        aliases:["rengoku", "Rengoku"],
+        anime:"Demon Slayer",
+        image:"img/rengoku.webp",
+        realImage:"img/rengoku.webp",
+        clue:"O hashira das chamas"
+    }
 ];

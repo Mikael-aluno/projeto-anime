@@ -10,51 +10,51 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950 via-slate-950 to-black">
-    <header class="w-full py-4 px-6 border-b border-indigo-900/50 bg-black/40 backdrop-blur-md flex justify-between items-center">
-        <div>
+    <header class="w-full flex flex-col gap-4 px-4 py-4 border-b border-indigo-900/50 bg-black/40 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div class="min-w-0">
             <p class="text-xs uppercase tracking-[0.3em] text-cyan-400 font-bold">Quiz por voz</p>
-            <h1 class="font-arcade text-xl md:text-2xl font-black text-white">Quem é o personagem?</h1>
+            <h1 class="font-arcade text-lg leading-tight sm:text-xl md:text-2xl font-black text-white">Quem é o personagem?</h1>
         </div>
-        <a href="../index.html" class="bg-indigo-950 hover:bg-indigo-900 text-indigo-100 px-4 py-2 rounded-xl border border-indigo-700/50 text-sm transition">
+        <a href="../index.html" class="w-fit shrink-0 bg-indigo-950 hover:bg-indigo-900 text-indigo-100 px-4 py-2 rounded-xl border border-indigo-700/50 text-sm transition">
             <i class="fa-solid fa-arrow-left mr-2"></i>Voltar
         </a>
     </header>
 
-    <main class="max-w-3xl mx-auto px-4 py-8">
-        <section class="bg-slate-900/80 border border-indigo-800/40 rounded-3xl p-6 md:p-8 shadow-2xl">
+    <main class="w-full max-w-3xl mx-auto px-3 py-6 sm:px-4 sm:py-8">
+        <section class="bg-slate-900/80 border border-indigo-800/40 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
             <div class="flex flex-col items-center text-center">
-                <button id="voiceHintBtn" type="button" class="w-36 h-36 rounded-full bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-700 shadow-[0_0_35px_rgba(34,211,238,.45)] text-white text-4xl transition hover:scale-105 active:scale-95" title="Ouvir pista">
+                <button id="voiceHintBtn" type="button" class="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-700 shadow-[0_0_35px_rgba(34,211,238,.45)] text-white text-3xl sm:text-4xl transition hover:scale-105 active:scale-95" title="Ouvir pista">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <p id="statusText" class="mt-5 text-indigo-200 text-sm min-h-6">Pressione o alto-falante para ouvir uma pista.</p>
+                <p id="statusText" class="mt-5 min-h-6 max-w-lg text-indigo-200 text-sm break-words">Pressione o alto-falante para ouvir uma pista.</p>
             </div>
 
             <div class="mt-8 grid grid-cols-3 gap-3 text-center">
-                <div class="bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-3">
-                    <p class="text-xs text-indigo-300">Pontos</p>
-                    <p id="voiceScore" class="text-xl font-bold text-yellow-400">0</p>
+                <div class="min-w-0 bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-2 sm:p-3">
+                    <p class="text-[11px] leading-tight text-indigo-300 sm:text-xs">Pontos</p>
+                    <p id="voiceScore" class="text-lg font-bold text-yellow-400 sm:text-xl">0</p>
                 </div>
-                <div class="bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-3">
-                    <p class="text-xs text-indigo-300">Streak</p>
-                    <p id="voiceStreak" class="text-xl font-bold text-amber-400">0</p>
+                <div class="min-w-0 bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-2 sm:p-3">
+                    <p class="text-[11px] leading-tight text-indigo-300 sm:text-xs">Streak</p>
+                    <p id="voiceStreak" class="text-lg font-bold text-amber-400 sm:text-xl">0</p>
                 </div>
-                <div class="bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-3">
-                    <p class="text-xs text-indigo-300">Tentativas</p>
-                    <p id="voiceAttempts" class="text-xl font-bold text-pink-400">3</p>
+                <div class="min-w-0 bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-2 sm:p-3">
+                    <p class="text-[11px] leading-tight text-indigo-300 sm:text-xs">Tentativas</p>
+                    <p id="voiceAttempts" class="text-lg font-bold text-pink-400 sm:text-xl">3</p>
                 </div>
             </div>
 
             <form id="voiceGuessForm" class="mt-6 flex flex-col sm:flex-row gap-3">
-                <input id="voiceGuessInput" type="text" autocomplete="off" placeholder="Digite ou fale o personagem..." class="flex-1 bg-slate-950/80 border-2 border-indigo-800/60 focus:border-cyan-500 rounded-xl px-4 py-3 text-white placeholder-indigo-400/50 outline-none">
-                <button type="button" id="microphoneBtn" class="bg-indigo-800 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition" title="Responder por voz">
+                <input id="voiceGuessInput" type="text" autocomplete="off" placeholder="Digite ou fale o personagem..." class="w-full min-w-0 flex-1 bg-slate-950/80 border-2 border-indigo-800/60 focus:border-cyan-500 rounded-xl px-4 py-3 text-base text-white placeholder-indigo-400/50 outline-none">
+                <button type="button" id="microphoneBtn" class="shrink-0 whitespace-nowrap bg-indigo-800 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition" title="Responder por voz">
                     <i class="fa-solid fa-microphone mr-2"></i>Falar
                 </button>
-                <button type="submit" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-5 py-3 rounded-xl font-bold transition">
+                <button type="submit" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-5 py-3 rounded-xl font-bold transition">
                     Chutar
                 </button>
             </form>
 
-            <div id="voiceFeedback" class="hidden mt-4 p-3 rounded-xl text-center text-sm font-medium border"></div>
+            <div id="voiceFeedback" class="hidden mt-4 p-3 rounded-xl text-center text-sm font-medium border break-words"></div>
 
             <button id="nextVoiceRound" type="button" class="hidden w-full mt-5 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold py-3 rounded-xl">
                 Próxima personagem <i class="fa-solid fa-arrow-right ml-2"></i>
@@ -182,6 +182,13 @@
                 anime:"Naruto",
                 clue:"o sobrevivente do clã uchiha",
                 audio:"audio/sasuke.mp3"
+            },
+            {
+                name:"Tanjiro",
+                aliases:["tanjiro", "Tanjiro"],
+                anime:"Demon Slayer",
+                clue:"O caçador de demonios mais puro",
+                audio:"audio/tanjiro.mp3"
             }
 
             
