@@ -618,5 +618,21 @@ const characters = [
         image:"img/sung.webp",
         realImage:"img/sung.webp",
         clue:"o caçador mais fraco que se torna o mais forte",
-    }
+     } ,
+    {
+        name:"Gojo",
+        alaises:["gojo", "Gojo"],
+        anime:"Jujutsu Kaisen",
+        image:"img/gojo.jpg",
+        realImage:"img/gojo.jpg",
+        clue:"O feiticeiro mais forte"
+    },
+    {
+        name:"Sukuna",
+        alaises:["sukuna", "Sukuna"],
+        anime:"Jujutsu Kaisen",
+        image:"img/sukuna.jpg",
+        realImage:"img/sukuna.jpg",
+        clue:"O rei das maldições"
+    },
 ];
