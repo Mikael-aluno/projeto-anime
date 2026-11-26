@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz por Voz - Otaku Expert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950 via-slate-950 to-black">
+    <header class="w-full py-4 px-6 border-b border-indigo-900/50 bg-black/40 backdrop-blur-md flex justify-between items-center">
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-cyan-400 font-bold">Quiz por voz</p>
+            <h1 class="font-arcade text-xl md:text-2xl font-black text-white">Quem é o personagem?</h1>
+        </div>
+        <a href="../index.html" class="bg-indigo-950 hover:bg-indigo-900 text-indigo-100 px-4 py-2 rounded-xl border border-indigo-700/50 text-sm transition">
+            <i class="fa-solid fa-arrow-left mr-2"></i>Voltar
+        </a>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        <section class="bg-slate-900/80 border border-indigo-800/40 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <div class="flex flex-col items-center text-center">
+                <button id="voiceHintBtn" type="button" class="w-36 h-36 rounded-full bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-700 shadow-[0_0_35px_rgba(34,211,238,.45)] text-white text-4xl transition hover:scale-105 active:scale-95" title="Ouvir pista">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <p id="statusText" class="mt-5 text-indigo-200 text-sm min-h-6">Pressione o alto-falante para ouvir uma pista.</p>
+            </div>
+
+            <div class="mt-8 grid grid-cols-3 gap-3 text-center">
+                <div class="bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-3">
+                    <p class="text-xs text-indigo-300">Pontos</p>
+                    <p id="voiceScore" class="text-xl font-bold text-yellow-400">0</p>
+                </div>
+                <div class="bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-3">
+                    <p class="text-xs text-indigo-300">Streak</p>
+                    <p id="voiceStreak" class="text-xl font-bold text-amber-400">0</p>
+                </div>
+                <div class="bg-indigo-950/50 border border-indigo-800/50 rounded-xl p-3">
+                    <p class="text-xs text-indigo-300">Tentativas</p>
+                    <p id="voiceAttempts" class="text-xl font-bold text-pink-400">3</p>
+                </div>
+            </div>
+
+            <form id="voiceGuessForm" class="mt-6 flex flex-col sm:flex-row gap-3">
+                <input id="voiceGuessInput" type="text" autocomplete="off" placeholder="Digite ou fale o personagem..." class="flex-1 bg-slate-950/80 border-2 border-indigo-800/60 focus:border-cyan-500 rounded-xl px-4 py-3 text-white placeholder-indigo-400/50 outline-none">
+                <button type="button" id="microphoneBtn" class="bg-indigo-800 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition" title="Responder por voz">
+                    <i class="fa-solid fa-microphone mr-2"></i>Falar
+                </button>
+                <button type="submit" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-5 py-3 rounded-xl font-bold transition">
+                    Chutar
+                </button>
+            </form>
+
+            <div id="voiceFeedback" class="hidden mt-4 p-3 rounded-xl text-center text-sm font-medium border"></div>
+
+            <button id="nextVoiceRound" type="button" class="hidden w-full mt-5 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold py-3 rounded-xl">
+                Próxima personagem <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </section>
+    </main>
+
+    <script>
+        const voiceCharacters = [
+            {
+                name: "Satoru Gojo",
+                aliases: ["gojo", "satoru gojo", "gōjo", "saturo gojo"],
+                anime: "Jujutsu Kaisen",
+                clue: "Feiticeiro mais forte da era moderna que usa os poderes do Sem Limite.",
+                audio: "audio/falha-minha.mp3"
+            },
+            {
+                name:"Sukuna",
+                aliases:["sukuna", "Sukuna"],
+                anime:"Jujutsu Kaisen",
+                clue:"O Rei das Maldições",
+                audio:"audio/sukuna-vamos-eh-cedo.mp3"
+            },
+            {
+                name:"Meliodas",
+                aliases:["Meliodas", "meliodas"],
+                anime:"Nanatsu No Taizai",
+                clue:"o caitão dos 7 pecados capitais",
+                audio:"audio/meliodas.mp3",
+            },
+            {
+                name:"Escanor",
+                aliases:["escanor", "Escanor"],
+                anime:"Nanatsu No Taizai",
+                clue:"aquele que está no topo de todas as raças",
+                audio:"audio/escanor.mp3"
+            },
+            {
+                name:"Goku",
+                aliases:["goku", "Goku"],
+                anime:"Dragon Ball",
+                clue:"o saiyajin da terra",
+                audio:"audio/goku.mp3"
+            },
+            {
+                name:"Vegeta",
+                aliases:["vegeta", "Vegeta"],
+                anime:"Dragon Ball",
+                clue:"O principe dos saiyajins",
+                audio:"audio/vegeta.mp3"
+            },
+            {
+                name:"Seiya",
+                aliases:["seiya", "Seiya"],
+                anime:"Cavaleiros do Zodiaco",
+                clue:"Cavaleiro de athena de bronze mais fiel de athena",
+                audio:"audio/seiya.mp3"
+            },
+            {
+                name:"Muzan",
+                aliases:["muzan", "Muzan"],
+                anime:"Demon Slayer",
+                clue:"O rei oni",
+                audio:"audio/muzan.mp3"
+            },
+            {
+                name:"Endou",
+                aliases:["Endou", "endou"],
+                anime:"Inazuma Eleven",
+                clue:"Goleiro lendario de inazuma",
+                audio:"audio/endou.mp3"
+            },
+            {
+                name:"Ban",
+                aliases:["Ban", "ban"],
+                anime:"Nanatsu no Taizai",
+                clue:"a raposa avarenta",
+                audio:"audio/ban.mp3"
+            },
+            {
+                name:"Goenji",
+                aliases:["goenji", "Goenji"],
+                anime:"Inazuma Eleven",
+                clue:"goleador de fogo",
+                audio:"audio/goenji.mp3"
+            },
+            {
+                name:"Asta",
+                aliases:["asta", "Asta"],
+                anime:"Black Cover",
+                clue:"O mago da anti-magia",
+                audio:"audio/asta.mp3"
+            }
+            
+
+
+        ];
+
+        let shuffledCharacters = [];
+        let currentCharacter = null;
+        let score = 0;
+        let streak = 0;
+        let attempts = 3;
+        let active = true;
+
+        const hintBtn = document.getElementById("voiceHintBtn");
+        const statusText = document.getElementById("statusText");
+        const guessInput = document.getElementById("voiceGuessInput");
+        const feedback = document.getElementById("voiceFeedback");
+        const nextRoundBtn = document.getElementById("nextVoiceRound");
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const microphoneBtn = document.getElementById("microphoneBtn");
+        const voiceGuessForm = document.getElementById("voiceGuessForm");
+        const canUseVoiceInput = Boolean(SpeechRecognition) && window.isSecureContext !== false;
+
+        function normalize(value) {
+            return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, " ").toLowerCase();
+        }
+
+        function shuffleCharacters(characters) {
+            const shuffled = [...characters];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const randomIndex = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startGame() {
+            shuffledCharacters = shuffleCharacters(voiceCharacters);
+            score = 0;
+            streak = 0;
+            updateScore();
+            loadRound();
+        }
+
+        function loadRound() {
+            nextRoundBtn.classList.add("hidden");
+            feedback.classList.add("hidden");
+
+            if (shuffledCharacters.length === 0) {
+                currentCharacter = null;
+                active = false;
+                guessInput.value = "";
+                guessInput.disabled = true;
+                hintBtn.disabled = true;
+                statusText.textContent = "Parabéns! Você acertou todos os personagens.";
+                return;
+            }
+
+            currentCharacter = shuffledCharacters.shift();
+            attempts = 3;
+            active = true;
+            microphoneBtn.disabled = !canUseVoiceInput;
+            guessInput.value = "";
+            guessInput.disabled = false;
+            document.getElementById("voiceAttempts").textContent = attempts;
+            hintBtn.disabled = false;
+            statusText.textContent = "Pressione o alto-falante para ouvir uma pista.";
+        }
+
+        function speak(text) {
+            if (!("speechSynthesis" in window)) {
+                statusText.textContent = "Seu navegador não suporta voz. Leia a pista abaixo.";
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "pt-BR";
+            utterance.rate = 0.95;
+            utterance.pitch = 1;
+            statusText.textContent = "Ouvindo pista...";
+            utterance.onend = () => statusText.textContent = "Faça seu palpite.";
+            window.speechSynthesis.speak(utterance);
+        }
+
+        hintBtn.addEventListener("click", () => {
+            if (!active) return;
+            const character = currentCharacter;
+            if (character.audio) {
+                const voiceClip = new Audio(new URL(character.audio, document.baseURI).href);
+                voiceClip.play().catch(() => {
+                    statusText.textContent = "Não foi possível reproduzir o áudio. Clique novamente.";
+                });
+                statusText.textContent = "Ouvindo o áudio...";
+                voiceClip.onended = () => statusText.textContent = "Faça seu palpite.";
+            } else {
+                speak(`Dica: ${character.clue}`);
+            }
+        });
+
+        document.getElementById("voiceGuessForm").addEventListener("submit", (event) => {
+            event.preventDefault();
+            if (!active) return;
+
+            const guess = normalize(guessInput.value);
+            if (!guess) return;
+
+            const character = currentCharacter;
+            const correct = [character.name, ...(character.aliases || [])].some(alias => normalize(alias) === guess);
+
+            if (correct) {
+                active = false;
+                guessInput.disabled = true;
+                score += attempts * 100;
+                streak++;
+                updateScore();
+                feedback.className = "mt-4 p-3 rounded-xl text-center text-sm font-medium border bg-emerald-950/80 border-emerald-700 text-emerald-300";
+                feedback.textContent = "Acertou! Você reconheceu o personagem.";
+                feedback.classList.remove("hidden");
+               const somAcerto = new Audio(new URL("audio/acerto.mp3", document.baseURI).href);
+somAcerto.play().catch(() => {});
+                nextRoundBtn.classList.remove("hidden");
+            } else {
+                attempts--;
+                document.getElementById("voiceAttempts").textContent = attempts;
+                if (attempts <= 0) {
+                    active = false;
+                    streak = 0;
+                    shuffledCharacters.push(character);
+                    guessInput.disabled = true;
+                    updateScore();
+                    feedback.className = "mt-4 p-3 rounded-xl text-center text-sm font-medium border bg-rose-950/80 border-rose-700 text-rose-300";
+                    feedback.textContent = "Fim das tentativas. A resposta não será revelada.";
+                    feedback.classList.remove("hidden");
+                    speak("Fim das tentativas.");
+                    nextRoundBtn.classList.remove("hidden");
+                } else {
+                    feedback.className = "mt-4 p-3 rounded-xl text-center text-sm font-medium border bg-amber-950/80 border-amber-700 text-amber-300";
+                    feedback.textContent = `Palpite incorreto. Restam ${attempts} tentativas.`;
+                    feedback.classList.remove("hidden");
+                    guessInput.value = "";
+                    guessInput.focus();
+                }
+            }
+        });
+
+        nextRoundBtn.addEventListener("click", () => {
+            loadRound();
+        });
+
+        function updateScore() {
+            document.getElementById("voiceScore").textContent = score;
+            document.getElementById("voiceStreak").textContent = streak;
+        }
+
+        if (!SpeechRecognition) {
+            microphoneBtn.disabled = true;
+            microphoneBtn.textContent = "Microfone indisponível";
+            statusText.textContent = "Este navegador não oferece reconhecimento de voz. Digite seu palpite.";
+        } else if (window.isSecureContext === false) {
+            microphoneBtn.disabled = true;
+            statusText.textContent = "Para usar o microfone, abra esta página por uma conexão segura (HTTPS).";
+        } else {
+            const recognition = new SpeechRecognition();
+            let isListening = false;
+            let recognitionFailed = false;
+            recognition.lang = "pt-BR";
+            recognition.interimResults = false;
+            recognition.continuous = false;
+
+            microphoneBtn.addEventListener("click", () => {
+                if (!active || isListening) return;
+
+                recognitionFailed = false;
+                microphoneBtn.disabled = true;
+                statusText.textContent = "Escutando... Fale o nome do personagem.";
+                try {
+                    recognition.start();
+                    isListening = true;
+                } catch (error) {
+                    isListening = false;
+                    microphoneBtn.disabled = false;
+                    statusText.textContent = error.name === "InvalidStateError"
+                        ? "O microfone já está ativo. Aguarde e tente novamente."
+                        : "Não foi possível iniciar o microfone. Verifique a permissão e tente novamente.";
+                }
+            });
+
+            recognition.addEventListener("result", (event) => {
+                const transcript = event.results[0][0].transcript.trim();
+                if (!transcript) {
+                    statusText.textContent = "Não reconheci o que você disse. Tente novamente.";
+                    return;
+                }
+
+                guessInput.value = transcript;
+                statusText.textContent = "Palpite reconhecido.";
+                voiceGuessForm.requestSubmit();
+            });
+
+            recognition.addEventListener("error", (event) => {
+                recognitionFailed = true;
+                const messages = {
+                    "not-allowed": "Acesso ao microfone negado. Permita o uso do microfone nas configurações do navegador.",
+                    "service-not-allowed": "O navegador bloqueou o reconhecimento de voz.",
+                    "audio-capture": "Não foi possível acessar o microfone. Verifique se ele está conectado e permitido.",
+                    "network": "O reconhecimento de voz precisa de conexão com a internet. Verifique sua conexão.",
+                    "no-speech": "Não ouvi sua fala. Fale mais perto do microfone e tente novamente.",
+                    "aborted": "Reconhecimento interrompido. Toque em Falar para tentar novamente.",
+                    "language-not-supported": "O reconhecimento de voz em português não está disponível neste navegador."
+                };
+                statusText.textContent = messages[event.error] || "Ocorreu um erro ao ouvir. Verifique o microfone e tente novamente.";
+            });
+
+            recognition.addEventListener("end", () => {
+                isListening = false;
+                microphoneBtn.disabled = !active || !canUseVoiceInput;
+                if (!recognitionFailed && statusText.textContent.startsWith("Escutando")) {
+                    statusText.textContent = "Não ouvi uma resposta. Toque em Falar e tente novamente.";
+                }
+            });
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

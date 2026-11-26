@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otaku expert unemployed - Quem é o Personagem?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex flex-col justify-between bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950 via-slate-950 to-black">
+
+    <!-- Header -->
+    <header class="w-full py-4 px-6 border-b border-indigo-900/50 bg-black/40 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-pink-500 to-purple-600 p-2.5 rounded-xl shadow-lg glow-box">
+                <i class="fa-solid fa-gamepad text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-arcade text-lg md:text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-400">
+                   OTAKU EXPERT UNEMPLOYED
+                </h1>
+                <p class="text-xs text-indigo-300 font-medium">Adivinhe o Personagem pelo Desfoque</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4 md:space-x-6">
+            <a href="voice.html" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2" title="Jogo por voz">
+                <i class="fa-solid fa-volume-high"></i>
+                <span class="hidden md:inline">Modo Voz</span>
+            </a>
+            <div class="bg-purple-950/60 border border-purple-800/50 px-3 py-1.5 rounded-xl flex items-center space-x-2 shadow-inner">
+                <i class="fa-solid fa-fire text-amber-400"></i>
+                <span class="text-xs text-purple-200 font-semibold"><span id="streakLabel">Streak:</span> <span id="streakCount" class="text-amber-400 font-bold">0</span></span>
+            </div>
+            <div class="bg-indigo-950/60 border border-indigo-800/50 px-3 py-1.5 rounded-xl flex items-center space-x-2 shadow-inner">
+                <i class="fa-solid fa-trophy text-yellow-400"></i>
+                <span class="text-xs text-indigo-200 font-semibold"><span id="scoreLabel">Pontos:</span> <span id="scoreCount" class="text-yellow-400 font-bold">0</span></span>
+            </div>
+            <button onclick="toggleModal('rulesModal')" class="bg-indigo-950 hover:bg-indigo-900 text-indigo-300 p-2 rounded-xl border border-indigo-700/50 transition duration-200" title="Regras">
+                <i class="fa-solid fa-circle-question"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6">
+        <section class="w-full max-w-4xl mb-4 bg-slate-900/80 border border-indigo-800/40 rounded-2xl p-4 md:p-5 shadow-xl relative z-10">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 class="text-sm uppercase tracking-wider text-purple-300 font-bold">Modo de jogo</h2>
+                <div class="flex gap-2">
+                    <button id="soloModeBtn" type="button" onclick="setGameMode('solo')" class="bg-indigo-700 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Solo</button>
+                    <button id="tournamentModeBtn" type="button" onclick="setGameMode('tournament')" class="bg-indigo-950 hover:bg-indigo-900 text-indigo-200 border border-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Torneio</button>
+                </div>
+            </div>
+
+            <div id="tournamentSetup" class="hidden mt-4 border-t border-indigo-800/50 pt-4">
+                <p class="text-sm text-indigo-200 mb-3">Adicione os participantes. Cada pessoa joga uma rodada; depois, a vez passa para a próxima.</p>
+                <form id="participantForm" onsubmit="addTournamentPlayer(event)" class="flex flex-col sm:flex-row gap-2">
+                    <input id="participantInput" type="text" maxlength="40" autocomplete="off" placeholder="Nome do participante" class="flex-1 bg-slate-950/80 border border-indigo-800/60 focus:border-pink-500 rounded-lg px-3 py-2 text-white placeholder-indigo-400/50 text-sm outline-none">
+                    <button type="submit" class="bg-indigo-700 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Adicionar pessoa</button>
+                </form>
+                <ul id="participantList" class="flex flex-wrap gap-2 mt-3"></ul>
+                <button id="startTournamentBtn" type="button" onclick="startTournament()" disabled class="mt-4 bg-gradient-to-r from-pink-600 to-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-bold transition">
+                    Iniciar torneio (adicione pelo menos 2 pessoas)
+                </button>
+            </div>
+
+            <div id="tournamentActivePanel" class="hidden mt-4 border-t border-indigo-800/50 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-indigo-950/50 rounded-xl p-3 border border-indigo-800/50">
+                    <p class="text-xs uppercase tracking-wider text-indigo-300">Vez de</p>
+                    <p id="currentPlayerName" class="text-lg font-bold text-pink-300 mt-1"></p>
+                </div>
+                <div class="bg-indigo-950/50 rounded-xl p-3 border border-indigo-800/50">
+                    <h3 class="text-xs uppercase tracking-wider text-yellow-300 font-bold mb-2"><i class="fa-solid fa-ranking-star mr-1"></i> Ranking</h3>
+                    <ol id="tournamentRanking" class="space-y-1 text-sm text-indigo-100"></ol>
+                </div>
+            </div>
+        </section>
+
+        <div id="gameCard" class="w-full max-w-4xl bg-slate-900/80 backdrop-blur-xl border border-indigo-800/40 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+            
+            <!-- Background Anime glow elements -->
+            <div class="absolute -top-24 -right-24 w-72 h-72 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-pink-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Game Content Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
+                
+                <!-- Left Column: Image Reveal Box -->
+                <div class="md:col-span-6 flex flex-col items-center">
+                    <div class="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden border-4 border-indigo-500/40 shadow-2xl bg-black flex items-center justify-center group glow-box">
+                        <img id="characterImage" src="" alt="Personagem Oculto" class="w-full h-full object-cover custom-blur" onerror="this.src='https://placehold.co/400x400/1e1b4b/cbd5e1?text=Anime+Character'">
+                        
+                        <!-- Overlay Badge for Anime Title -->
+                        <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10 text-xs font-semibold text-pink-300 shadow">
+                            <i class="fa-solid fa-tv mr-1 text-[10px]"></i> <span id="animeCategoryTag">Saint Seiya</span>
+                        </div>
+
+                        <!-- Blur Level indicator badge -->
+                        <div class="absolute bottom-3 right-3 bg-indigo-950/80 backdrop-blur-md px-3 py-1 rounded-lg border border-indigo-700/50 text-xs font-bold text-indigo-200 shadow flex items-center space-x-1">
+                            <i class="fa-solid fa-eye-slash text-purple-400"></i>
+                            <span>Desfoque: <span id="blurLevelText" class="text-pink-400">24px</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Attempts Progress Dots -->
+                    <div class="flex items-center space-x-2 mt-4">
+                        <span class="text-xs text-indigo-300 font-medium mr-1">Tentativas:</span>
+                        <div id="attemptDots" class="flex space-x-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Clues, Input and Interactions -->
+                <div class="md:col-span-6 flex flex-col space-y-5">
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-sm uppercase tracking-wider text-purple-400 font-bold"><i class="fa-solid fa-lightbulb mr-1 text-yellow-400"></i> Dica do Personagem</h2>
+                            <button onclick="revealExtraClue()" id="hintBtn" class="text-xs bg-indigo-950 hover:bg-indigo-900 text-indigo-200 px-2.5 py-1 rounded-lg border border-indigo-700 transition flex items-center space-x-1">
+                                <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
+                                <span>Ver Dica Extra</span>
+                            </button>
+                        </div>
+                        <div id="clueBox" class="bg-indigo-950/40 border border-indigo-800/50 rounded-xl p-4 text-sm text-indigo-100 min-h-[70px] flex items-center shadow-inner">
+                            Carregando dica inicial...
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
+                    <form id="guessForm" onsubmit="handleGuess(event)" class="space-y-3">
+                        <div class="relative">
+                            <input type="text" id="guessInput" autocomplete="off" placeholder="Digite o nome do personagem..." 
+                                class="w-full bg-slate-950/80 border-2 border-indigo-800/60 focus:border-pink-500 rounded-xl px-4 py-3.5 text-white placeholder-indigo-400/50 text-sm md:text-base outline-none shadow-inner transition">
+                            <button type="submit" class="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white px-5 rounded-lg font-semibold text-sm shadow-md transition transform active:scale-95 flex items-center space-x-1">
+                                <span>Chutar</span>
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Alternative / Options Helper or Skip -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="skipCharacter()" class="text-xs text-indigo-400 hover:text-indigo-200 transition flex items-center space-x-1">
+                            <i class="fa-solid fa-forward"></i>
+                            <span>Pular Personagem (-50 pts)</span>
+                        </button>
+                    </div>
+
+                    <!-- Feedback message box -->
+                    <div id="feedbackMessage" class="hidden p-3 rounded-xl text-sm font-medium border text-center transition animate-fade-in"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-3 text-center text-xs text-indigo-400/60 border-t border-indigo-950">
+         OTAKU EXPERT UNEMPLOYED &bull; Saint Seiya, To Love-Ru, Re:Zero, Naruto & muito mais!, todos os direitos da imagem aos donos dos animes e quem postou caso seja feita por fã
+         so estou fazendo um quiz sobre personagens com imagens da internet
+    </footer>
+
+    <!-- Result / Game Over / Win Modal Overlay -->
+    <div id="resultModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-indigo-700/60 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl glow-box transform transition scale-95 opacity-0 duration-300" id="modalContentBox">
+            <div id="modalIconContainer" class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg">
+                <!-- Icon injected -->
+            </div>
+            <h3 id="modalTitle" class="font-arcade text-2xl font-bold mb-2">Parabéns!</h3>
+            <p id="modalSubtitle" class="text-sm text-indigo-300 mb-6">Você acertou o personagem em cheio!</p>
+            
+            <div id="modalStats" class="bg-indigo-950/60 rounded-2xl p-4 mb-6 border border-indigo-900 text-sm space-y-2 text-left">
+                <!-- Stats injected -->
+            </div>
+
+            <button id="nextRoundBtn" onclick="nextRound()" class="w-full bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 text-sm uppercase tracking-wider">
+                Próximo Personagem <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rulesModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-indigo-700/60 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="toggleModal('rulesModal')" class="absolute top-4 right-4 text-indigo-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="font-arcade text-lg font-bold text-pink-400 mb-4 flex items-center">
+                <i class="fa-solid fa-book-open mr-2"></i> Como Jogar
+            </h3>
+            <ul class="text-sm text-indigo-200 space-y-3 list-disc pl-5">
+                <li>Uma imagem de um personagem de anime famoso aparecerá <strong>muito embaçada</strong>.</li>
+                <li>Digite seu palpite no campo de texto e clique em <strong>Chutar</strong>.</li>
+                <li>A cada erro, o desfoque diminui, revelando mais detalhes da imagem, mas você perde uma tentativa!</li>
+                <li>Você tem <strong>4 tentativas</strong> no total. Se zerar as tentativas ou errar todas, você perde o desafio.</li>
+                <li>Use o botão de <strong>Dica Extra</strong> se precisar de uma mãozinha.</li>
+                <li>Acerte o máximo de personagens seguidos para acumular pontos e subir seu Streak!</li>
+                <li>No <strong>Modo Torneio</strong>, adicione quantas pessoas quiser (mínimo de 2). Cada pessoa joga uma rodada; depois, a vez passa para a próxima. O ranking é ordenado pelos pontos.</li>
+            </ul>
+            <div class="mt-6 text-center">
+                <button onclick="toggleModal('rulesModal')" class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition">
+                    Entendi, Vamos Jogar!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="characters.js"></script>
+
+    <!-- Game Logic Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+    const botaoAudio1 = document.getElementById("botaoAudio1");
+    const musica1 = document.getElementById("musica1");
+
+    if (botaoAudio1 && musica1) {
+        botaoAudio1.addEventListener("click", () => {
+            musica1.currentTime = 0;
+
+            musica1.play().catch((erro) => {
+                console.error("Erro ao reproduzir música:", erro);
+            });
+        });
+    }
+});
+        // Rich Character Database covering Saint Seiya, To Love-Ru, Re:Zero, Naruto, Dragon Ball, One Piece, Bleach, etc.
+
+
+        let currentIdx = 0;
+        let score = 0;
+        let streak = 0;
+        let attemptsLeft = 4;
+        let currentBlur = 24; // starting blur in pixels
+        let gameActive = true;
+        let shuffledCharacters = [];
+        let gameMode = 'solo';
+        let tournamentPlayers = [];
+        let currentPlayerIndex = 0;
+        let tournamentStarted = false;
+
+        // Initialize game
+        function initGame() {
+            shuffledCharacters = [...characters].sort(() => Math.random() - 0.5);
+            currentIdx = 0;
+            score = 0;
+            streak = 0;
+            updateScoreBoard();
+            loadCharacter();
+        }
+
+        function loadCharacter() {
+            if (currentIdx >= shuffledCharacters.length) {
+                shuffledCharacters = [...characters].sort(() => Math.random() - 0.5);
+                currentIdx = 0;
+            }
+
+            const char = shuffledCharacters[currentIdx];
+            gameActive = true;
+            attemptsLeft = 4;
+            currentBlur = 24; // High blur initially
+
+            // Setup DOM elements
+            const imgEl = document.getElementById('characterImage');
+            // Using a nice reliable artwork or real image with fallback
+            imgEl.src = char.realImage || char.image;
+            imgEl.style.filter = `blur(${currentBlur}px) brightness(0.6)`;
+
+            document.getElementById('animeCategoryTag').innerText = char.anime;
+            document.getElementById('blurLevelText').innerText = `${currentBlur}px`;
+            document.getElementById('clueBox').innerText = char.clue;
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').disabled = false;
+
+            hideFeedback();
+            renderAttemptDots();
+        }
+
+        function setGameMode(mode) {
+            if (!document.getElementById('resultModal').classList.contains('hidden')) return;
+
+            gameMode = mode;
+            tournamentStarted = false;
+            gameActive = mode === 'solo';
+            document.getElementById('soloModeBtn').className = mode === 'solo'
+                ? 'bg-indigo-700 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition'
+                : 'bg-indigo-950 hover:bg-indigo-900 text-indigo-200 border border-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold transition';
+            document.getElementById('tournamentModeBtn').className = mode === 'tournament'
+                ? 'bg-indigo-700 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition'
+                : 'bg-indigo-950 hover:bg-indigo-900 text-indigo-200 border border-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold transition';
+            document.getElementById('tournamentSetup').classList.toggle('hidden', mode !== 'tournament');
+            document.getElementById('tournamentActivePanel').classList.add('hidden');
+            document.getElementById('gameCard').classList.toggle('hidden', mode === 'tournament');
+
+            if (mode === 'solo') {
+                loadCharacter();
+            }
+            updateScoreBoard();
+            renderParticipantList();
+        }
+
+        function addTournamentPlayer(event) {
+            event.preventDefault();
+            const input = document.getElementById('participantInput');
+            const name = input.value.trim();
+            if (!name) return;
+
+            tournamentPlayers.push({ name, score: 0, streak: 0 });
+            input.value = '';
+            input.focus();
+            renderParticipantList();
+        }
+
+        function removeTournamentPlayer(index) {
+            tournamentPlayers.splice(index, 1);
+            renderParticipantList();
+        }
+
+        function renderParticipantList() {
+            const list = document.getElementById('participantList');
+            list.replaceChildren();
+
+            tournamentPlayers.forEach((player, index) => {
+                const item = document.createElement('li');
+                item.className = 'flex items-center gap-2 bg-indigo-950/70 border border-indigo-800 rounded-lg px-3 py-1.5 text-sm text-indigo-100';
+                const name = document.createElement('span');
+                name.textContent = player.name;
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'text-indigo-400 hover:text-rose-300';
+                removeButton.setAttribute('aria-label', `Remover ${player.name}`);
+                removeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                removeButton.addEventListener('click', () => removeTournamentPlayer(index));
+                item.append(name, removeButton);
+                list.appendChild(item);
+            });
+
+            const canStart = tournamentPlayers.length >= 2;
+            const startButton = document.getElementById('startTournamentBtn');
+            startButton.disabled = !canStart;
+            startButton.innerText = canStart
+                ? 'Iniciar torneio'
+                : 'Iniciar torneio (adicione pelo menos 2 pessoas)';
+        }
+
+        function startTournament() {
+            if (tournamentPlayers.length < 2) return;
+
+            tournamentPlayers = tournamentPlayers.map(player => ({ ...player, score: 0, streak: 0 }));
+            currentPlayerIndex = 0;
+            currentIdx = 0;
+            shuffledCharacters = [...characters].sort(() => Math.random() - 0.5);
+            tournamentStarted = true;
+            document.getElementById('tournamentSetup').classList.add('hidden');
+            document.getElementById('tournamentActivePanel').classList.remove('hidden');
+            document.getElementById('gameCard').classList.remove('hidden');
+            updateScoreBoard();
+            renderTournamentRanking();
+            loadCharacter();
+        }
+
+        function renderTournamentRanking() {
+            const ranking = document.getElementById('tournamentRanking');
+            ranking.replaceChildren();
+            const orderedPlayers = tournamentPlayers
+                .map((player, index) => ({ ...player, originalIndex: index }))
+                .sort((a, b) => b.score - a.score || a.originalIndex - b.originalIndex);
+
+            orderedPlayers.forEach((player, index) => {
+                const item = document.createElement('li');
+                item.className = 'flex justify-between gap-3';
+                const playerName = document.createElement('span');
+                playerName.textContent = `${index + 1}. ${player.name}`;
+                const playerScore = document.createElement('span');
+                playerScore.className = 'font-bold text-yellow-300';
+                playerScore.textContent = `${player.score} pts`;
+                item.append(playerName, playerScore);
+                ranking.appendChild(item);
+            });
+        }
+
+        function advanceTurn() {
+            if (gameMode === 'tournament' && tournamentStarted) {
+                currentPlayerIndex = (currentPlayerIndex + 1) % tournamentPlayers.length;
+            }
+            currentIdx++;
+        }
+
+        function renderAttemptDots() {
+            const container = document.getElementById('attemptDots');
+            container.innerHTML = '';
+            for (let i = 1; i <= 4; i++) {
+                const dot = document.createElement('div');
+                dot.className = `w-3.5 h-3.5 rounded-full border transition-all duration-300 ${
+                    i <= attemptsLeft 
+                    ? 'bg-pink-500 border-pink-400 shadow-[0_0_8px_rgba(236,72,153,0.8)]' 
+                    : 'bg-slate-800 border-slate-700'
+                }`;
+                container.appendChild(dot);
+            }
+        }
+
+        function normalizeGuess(value) {
+            return value
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .trim()
+                .replace(/\s+/g, ' ')
+                .toLowerCase();
+        }
+
+        function handleGuess(e) {
+            e.preventDefault();
+            if (!gameActive) return;
+
+            const inputVal = document.getElementById('guessInput').value.trim();
+            if (!inputVal) return;
+
+            const char = shuffledCharacters[currentIdx];
+            const normalizedGuess = normalizeGuess(inputVal);
+            const isCorrect = [char.name, ...char.aliases]
+                .some(alias => normalizeGuess(alias) === normalizedGuess);
+
+            if (isCorrect) {
+                // Correct guess!
+                gameActive = false;
+                if (gameMode === 'tournament' && tournamentStarted) {
+                    const player = tournamentPlayers[currentPlayerIndex];
+                    player.score += attemptsLeft * 25 + 50;
+                    player.streak++;
+                } else {
+                    score += attemptsLeft * 25 + 50;
+                    streak++;
+                }
+                updateScoreBoard();
+                
+                // Clear blur completely
+                const imgEl = document.getElementById('characterImage');
+                imgEl.style.filter = 'blur(0px) brightness(1)';
+
+                showModal(true, char);
+            } else {
+                // Incorrect guess
+                attemptsLeft--;
+                currentBlur = Math.max(0, currentBlur - 6); // Reduce blur by 6px per error
+                
+                const imgEl = document.getElementById('characterImage');
+                imgEl.style.filter = `blur(${currentBlur}px) brightness(${0.6 + (24 - currentBlur)/40})`;
+                document.getElementById('blurLevelText').innerText = `${currentBlur}px`;
+                
+                renderAttemptDots();
+
+                if (attemptsLeft <= 0) {
+                    // Game Over for this character
+                    gameActive = false;
+                    if (gameMode === 'tournament' && tournamentStarted) {
+                        tournamentPlayers[currentPlayerIndex].streak = 0;
+                    } else {
+                        streak = 0;
+                    }
+                    updateScoreBoard();
+
+                    // Reveal image
+                    imgEl.style.filter = 'blur(0px) brightness(1)';
+                    showModal(false, char);
+                } else {
+                    showFeedback(`Incorreto! O desfoque diminuiu. Restam ${attemptsLeft} tentativas.`, 'error');
+                    document.getElementById('guessInput').value = '';
+                    document.getElementById('guessInput').focus();
+                }
+            }
+        }
+
+        function revealExtraClue() {
+            if (!gameActive) return;
+            const char = shuffledCharacters[currentIdx];
+            const clueBox = document.getElementById('clueBox');
+            clueBox.innerHTML = `<span class="text-pink-300 font-semibold">Dica Extra:</span> O nome começa com a letra <span class="text-yellow-400 font-bold text-base">"${char.name.charAt(0).toUpperCase()}"</span> e tem ${char.name.length} letras (incluindo espaços).`;
+            
+            // Penalty for hint
+            if (gameMode === 'tournament' && tournamentStarted) {
+                tournamentPlayers[currentPlayerIndex].score = Math.max(0, tournamentPlayers[currentPlayerIndex].score - 15);
+            } else {
+                score = Math.max(0, score - 15);
+            }
+            updateScoreBoard();
+        }
+
+        function skipCharacter() {
+            if (!gameActive) return;
+            const isTournament = gameMode === 'tournament' && tournamentStarted;
+            const player = isTournament ? tournamentPlayers[currentPlayerIndex] : null;
+            const currentScore = player ? player.score : score;
+            if (currentScore < 50) {
+                showFeedback('Você precisa de pelo menos 50 pontos para pular o personagem.', 'warning');
+                return;
+            }
+
+            gameActive = false;
+            if (player) {
+                player.score -= 50;
+                player.streak = 0;
+            } else {
+                score -= 50;
+                streak = 0;
+            }
+            updateScoreBoard();
+            
+            const char = shuffledCharacters[currentIdx];
+            showFeedback(`Personagem era: ${char.name}. Pulando...`, 'warning');
+            
+            setTimeout(() => {
+                advanceTurn();
+                updateScoreBoard();
+                loadCharacter();
+            }, 1500);
+        }
+
+        function showFeedback(msg, type) {
+            const fb = document.getElementById('feedbackMessage');
+            fb.innerText = msg;
+            fb.classList.remove('hidden', 'bg-red-950/80', 'border-red-800', 'text-red-300', 'bg-amber-950/80', 'border-amber-800', 'text-amber-300');
+            
+            if (type === 'error') {
+                fb.classList.add('bg-red-950/80', 'border-red-800', 'text-red-300');
+            } else {
+                fb.classList.add('bg-amber-950/80', 'border-amber-800', 'text-amber-300');
+            }
+        }
+
+        function hideFeedback() {
+            const fb = document.getElementById('feedbackMessage');
+            fb.classList.add('hidden');
+        }
+
+        function updateScoreBoard() {
+            const isTournament = gameMode === 'tournament' && tournamentStarted;
+            const player = isTournament ? tournamentPlayers[currentPlayerIndex] : null;
+            document.getElementById('scoreLabel').innerText = 'Pontos:';
+            document.getElementById('scoreCount').innerText = player ? player.score : score;
+            document.getElementById('streakCount').innerText = player ? player.streak : streak;
+            if (isTournament) {
+                document.getElementById('currentPlayerName').innerText = player.name;
+                renderTournamentRanking();
+            }
+        }
+
+        function showModal(isWin, char) {
+            const modal = document.getElementById('resultModal');
+            const contentBox = document.getElementById('modalContentBox');
+            const iconContainer = document.getElementById('modalIconContainer');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const stats = document.getElementById('modalStats');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                contentBox.classList.remove('scale-95', 'opacity-0');
+                contentBox.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            if (isWin) {
+                iconContainer.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg bg-gradient-to-tr from-emerald-500 to-teal-400 text-white animate-bounce";
+                iconContainer.innerHTML = '<i class="fa-solid fa-check"></i>';
+                title.innerText = "EXCELENTE!";
+                title.className = "font-arcade text-2xl font-bold mb-2 text-emerald-400";
+                const currentPlayer = gameMode === 'tournament' && tournamentStarted
+                    ? `${tournamentPlayers[currentPlayerIndex].name} acertou: `
+                    : 'Você acertou: ';
+                subtitle.innerText = `${currentPlayer}${char.name} (${char.anime})`;
+                
+                stats.innerHTML = `
+                    <div class="flex justify-between items-center"><span class="text-indigo-300">Tentativas usadas:</span> <span class="font-bold text-white">${5 - attemptsLeft} / 4</span></div>
+                    <div class="flex justify-between items-center"><span class="text-indigo-300">Bônus ganho:</span> <span class="font-bold text-yellow-400">+${attemptsLeft * 25 + 50} pts</span></div>
+                    <div class="flex justify-between items-center"><span class="text-indigo-300">Streak atual:</span> <span class="font-bold text-amber-400">${gameMode === 'tournament' && tournamentStarted ? tournamentPlayers[currentPlayerIndex].streak : streak} 🔥</span></div>
+                `;
+            } else {
+                iconContainer.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg bg-gradient-to-tr from-rose-600 to-pink-500 text-white";
+                iconContainer.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                title.innerText = "FIM DA LINHA!";
+                title.className = "font-arcade text-2xl font-bold mb-2 text-rose-500";
+                const playerMissed = gameMode === 'tournament' && tournamentStarted
+                    ? `${tournamentPlayers[currentPlayerIndex].name} errou todas as tentativas. A vez passa para o próximo! `
+                    : 'O desfoque zerou e você não adivinhou! ';
+                subtitle.innerText = `${playerMissed}O personagem era ${char.name}.`;
+                
+                stats.innerHTML = `
+                    <div class="flex justify-between items-center"><span class="text-indigo-300">Anime:</span> <span class="font-bold text-white">${char.anime}</span></div>
+                    <div class="flex justify-between items-center"><span class="text-indigo-300">Streak perdido:</span> <span class="font-bold text-rose-400">0</span></div>
+                `;
+            }
+            document.getElementById('nextRoundBtn').innerHTML = gameMode === 'tournament' && tournamentStarted
+                ? 'Próximo jogador <i class="fa-solid fa-arrow-right ml-2"></i>'
+                : 'Próximo Personagem <i class="fa-solid fa-arrow-right ml-2"></i>';
+        }
+
+        function nextRound() {
+            const modal = document.getElementById('resultModal');
+            const contentBox = document.getElementById('modalContentBox');
+            
+            contentBox.classList.remove('scale-100', 'opacity-100');
+            contentBox.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                advanceTurn();
+                updateScoreBoard();
+                loadCharacter();
+            }, 200);
+        }
+
+        function toggleModal(modalId) {
+            const m = document.getElementById(modalId);
+            if (m.classList.contains('hidden')) {
+                m.classList.remove('hidden');
+            } else {
+                m.classList.add('hidden');
+            }
+        }
+
+        // Run initialization on window load
+        window.onload = function() {
+            initGame();
+        };
+    </script>
+
+
+
+     <div class="audio-player">
+      <audio id="musica1">
+        <source src="audio/sumire0505-ethereal-dreamscape-340433.mp3" type="audio/mpeg">
+      </audio>
+      <button id="botaoAudio1" class="audio-button" type="button">musica calma</button>
+      <p>autor da musica:sumire0505</p>
+    </div>
+    
+
+   
+</body>
+</html>

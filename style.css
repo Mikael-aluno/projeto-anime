@@ -1,0 +1,56 @@
+  body {
+            font-family: 'Poppins', sans-serif;
+            background: #149655;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .font-arcade {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .glow-text {
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.7), 0 0 30px rgba(236, 72, 153, 0.5);
+        }
+        .glow-box {
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+        }
+        .custom-blur {
+            transition: filter 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; filter: drop-shadow(0 0 12px rgba(234, 179, 8, 0.8)); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e00cf;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #550cd3;
+            border-radius: 4px;
+        }
+        .audio-button{
+            background-color: rgba(177, 8, 255, 0.979);
+            border-radius: 90px;
+        }
+
+        .audio-button:hover {
+    background-color: #6f6f6f;
+    transform: translateY(-1px);
+}
+        .audio-button:active {
+    transform: translateY(0);
+}
+
+        .audio-player {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
