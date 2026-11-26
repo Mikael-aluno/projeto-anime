@@ -610,5 +610,13 @@ const characters = [
         image:"img/rengoku.webp",
         realImage:"img/rengoku.webp",
         clue:"O hashira das chamas"
+    },
+    {
+        name:"Sung Jin-Woo",
+        aliases:["sung jin-woo", "Sung Jin-Woo", "Sung jin-woo"],
+        anime:"Solo Leveling",
+        image:"img/sung.webp",
+        realImage:"img/sung.webp",
+        clue:"o caçador mais fraco que se torna o mais forte",
     }
 ];
