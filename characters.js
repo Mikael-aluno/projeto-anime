@@ -219,7 +219,7 @@ const characters = [
         name:"Celine",
         aliases:["Celine", "celine"],
         anime:"To Love-Ru",
-        image:"img/celine.jpp",
+        image:"img/celine.jpg",
         realImage:"img/celine.jpg",
         clue:"presente de aniversario da Lala para o Rito, basicamente uma filha adotiva"
     },
