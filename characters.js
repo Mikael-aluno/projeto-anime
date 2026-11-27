@@ -572,9 +572,6 @@ const characters = [
         realImage:"img/chichi.jpg",
         clue:"Esposa do Goku"
     },
-    {
-        
-    },
 
     // One Piece
     {
@@ -635,4 +632,20 @@ const characters = [
         realImage:"img/sukuna.jpg",
         clue:"O rei das maldições"
     },
+    {
+        name:"Brook",
+        aliases:["Brook", "brook"],
+        anime:"One Piece",
+        image:"img/brook.jpg",
+        realImage:"img/brook.jpg",
+        clue:"esqueleto pevertido"
+    },
+    {
+        name:"Kaido",
+        aliases:["Kaido", "kaido"],
+        anime:"One Piece",
+        image:"img/kaido.jpg",
+        realImage:"img/kaido.jpg",
+        clue:"Capitão das 100 feras"
+    }
 ];
