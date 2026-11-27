@@ -42,6 +42,7 @@ const submitGuess = document.getElementById("submitGuess");
 const feedback = document.getElementById("feedback");
 const nextRoundButton = document.getElementById("nextRound");
 const frameDots = Array.from(document.querySelectorAll(".frame-dot"));
+const assetRoot = new URL("../", document.baseURI);
 
 let score = 0;
 let streak = 0;
@@ -88,7 +89,7 @@ function shuffle(items) {
 
 function setFrame(index) {
     currentFrame = index;
-    frameImage.src = currentRound.images[currentFrame];
+    frameImage.src = new URL(currentRound.images[currentFrame], assetRoot).href;
     frameCount.textContent = `Frame ${currentFrame + 1} de 3`;
     frameDots.forEach((dot, dotIndex) => {
         dot.classList.toggle("bg-cyan-400", dotIndex === currentFrame);

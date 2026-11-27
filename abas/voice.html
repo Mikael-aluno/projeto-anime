@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz por Voz - Otaku Expert</title>
-    <link rel="icon" type="image/jpeg" href="img/banner.jpeg">
+    <link rel="icon" type="image/jpeg" href="../img/banner.jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -291,6 +291,7 @@
         const microphoneBtn = document.getElementById("microphoneBtn");
         const voiceGuessForm = document.getElementById("voiceGuessForm");
         const canUseVoiceInput = Boolean(SpeechRecognition) && window.isSecureContext !== false;
+        const assetRoot = new URL("../", document.baseURI);
 
         function normalize(value) {
             return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, " ").toLowerCase();
@@ -357,7 +358,7 @@
             if (!active) return;
             const character = currentCharacter;
             if (character.audio) {
-                const voiceClip = new Audio(new URL(character.audio, document.baseURI).href);
+                const voiceClip = new Audio(new URL(character.audio, assetRoot).href);
                 voiceClip.play().catch(() => {
                     statusText.textContent = "Não foi possível reproduzir o áudio. Clique novamente.";
                 });
@@ -387,8 +388,10 @@
                 feedback.className = "mt-4 p-3 rounded-xl text-center text-sm font-medium border bg-emerald-950/80 border-emerald-700 text-emerald-300";
                 feedback.textContent = "Acertou! Você reconheceu o personagem.";
                 feedback.classList.remove("hidden");
-               const somAcerto = new Audio(new URL("audio/acerto.mp3", document.baseURI).href);
-somAcerto.play().catch(() => {});
+                const somAcerto = new Audio(new URL("audio/acerto.mp3", assetRoot).href);
+somAcerto.play().catch((error) => {
+    console.error("Não foi possível reproduzir o som de acerto:", error);
+});
                 nextRoundBtn.classList.remove("hidden");
             } else {
                 attempts--;

@@ -1,13 +1,13 @@
   body {
             font-family: 'Poppins', sans-serif;
-            background: #149655;
+            background-color: #020617;
             color: #f3f4f6;
             overflow-x: hidden;
         }
         .header-banner {
             background-image:
                 linear-gradient(rgba(15, 23, 42, .28), rgba(15, 23, 42, .28)),
-                url('img/banner.jpeg');
+                url('../img/banner.jpeg');
             background-size: contain;
             background-position: center 50%;
             background-repeat: no-repeat;
